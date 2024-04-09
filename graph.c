@@ -13,14 +13,14 @@ int **inicializar_grafo(int n) {
 }
 
 void imprimir_grafo(int **grafo, int n) {
-    printf("   ");
+    printf("\n   ");
     for (int k = 1; k <= n; k++)
-        printf("[%d] ", k);
+        printf(" [%d]", k);
     printf("\n");
     for (int i = 0; i < n; i++) {
         printf("[%d] ", i+1);
         for (int j = 0; j < n; j++) {
-            printf("%d   ", grafo[i][j]);
+            printf("%2d  ", grafo[i][j]);
         }
         printf("\n");
     }
@@ -33,19 +33,31 @@ void liberar_memoria(int **grafo, int n) {
     free(grafo);
 }
 
-void adicionar_aresta(int **grafo, int i, int j, int peso) {
-    grafo[i-1][j-1] = peso;
+void adicionar_aresta(int **grafo, int n, int i, int j, int peso) {
+    if (i > 0 && j > 0 && i <= n && j <= n) {
+        grafo[i-1][j-1] = peso;
+        printf("\nAresta [%d -> %d] adicionada\n", i, j);
+    }
+    else
+        printf("\nVertices invalidos\n");
+
 } 
 
-void remover_aresta(int **grafo, int i, int j) {
-    grafo[i-1][j-1] = 0;
+void remover_aresta(int **grafo, int n, int i, int j) {
+    if (i > 0 && j > 0 && i <= n && j <= n) {
+        grafo[i-1][j-1] = 0;
+        printf("\nAresta [%d -> %d] removida\n", i, j);
+    }
+    else
+        printf("\nVertices invalidos\n");
+
 } 
 
-void verificar_existencia_aresta(int **grafo, int i, int j) {
-    if (grafo[i-1][j-1] != 0)
-        printf("\nA Aresta de peso %d existe\n", grafo[i-1][j-1]);
+void verificar_existencia_aresta(int **grafo, int n, int i, int j) {
+    if ((i > 0 && j > 0 && i <= n && j <= n) && grafo[i-1][j-1] != 0)
+        printf("\nAresta [%d -> %d] de peso %d existente\n", i, j, grafo[i-1][j-1]);
     else    
-        printf("\nA Aresta nao existe\n");
+        printf("\nAresta [%d -> %d] nao existente\n", i, j);
 }
 
 int numero_arestas(int **grafo, int n) {
@@ -63,6 +75,9 @@ int numero_arestas(int **grafo, int n) {
 }
 
 int verificar_vizinhos(int **grafo, int n, int vertice) {
+    if (vertice > n)
+        return 0;
+    
     int num_vizinhos = 0;
 
     printf("\nVizinhos de V%d: ", vertice);
@@ -80,6 +95,9 @@ int verificar_vizinhos(int **grafo, int n, int vertice) {
 }
 
 int grau_vertice(int **grafo, int n, int vertice) {
+    if (vertice > n)
+        return 0;
+
     int grau = 0;
 
     for (int i = 0; i < n; i++) {
@@ -114,40 +132,42 @@ int main() {
     printf("Dimensao do Grafo: ");
     scanf("%d", &n);
 
+    if (n <= 0) {
+        printf("Dimensao invalida\n");
+        exit(1);
+    }
+
     grafo = inicializar_grafo(n);
 
-    adicionar_aresta(grafo, 2, 4, 8);
-    adicionar_aresta(grafo, 1, 2, 2);
-    adicionar_aresta(grafo, 4, 1, 4);
-    //adicionar_aresta(grafo, 3, 2, 6);
-    adicionar_aresta(grafo, 4, 4, 16);
-    adicionar_aresta(grafo, 1, 1, 1);
-    adicionar_aresta(grafo, 3, 3, 9);
+    adicionar_aresta(grafo, n, 1, 2, 2);
+    adicionar_aresta(grafo, n, 2, 3, 4);
+    adicionar_aresta(grafo, n, 3, 1, 12);
+    adicionar_aresta(grafo, n, 4, 2, 3);
+    adicionar_aresta(grafo, n, 5, 4, 8);
+    adicionar_aresta(grafo, n, 3, 5, 40);
 
     imprimir_grafo(grafo, n);
 
-    verificar_existencia_aresta(grafo, 3, 3);
+    verificar_existencia_aresta(grafo, n, 5, 3);
 
-    remover_aresta(grafo, 3, 3);
+    remover_aresta(grafo, n, 3, 5);
+    remover_aresta(grafo, n, 3, 1);
 
     imprimir_grafo(grafo, n);
 
-    verificar_existencia_aresta(grafo, 3, 3);
+    verificar_existencia_aresta(grafo, n, 3, 3);
 
     printf("\nNumero de Arestas: %d\n", numero_arestas(grafo, n));
 
-    printf("\nNumero de vizinhos: %d\n", verificar_vizinhos(grafo, n, 1));
-    printf("\nNumero de vizinhos: %d\n", verificar_vizinhos(grafo, n, 2));
-    printf("\nNumero de vizinhos: %d\n", verificar_vizinhos(grafo, n, 3));
-    printf("\nNumero de vizinhos: %d\n", verificar_vizinhos(grafo, n, 4));
+    for (int i = 1; i <= n; i++) {
+        printf("\nNumero de vizinhos: %d\n", verificar_vizinhos(grafo, n, i));
+    }
 
-    printf("\nGrau do vertice %d: %d\n", 1, grau_vertice(grafo, n, 1));
-    printf("\nGrau do vertice %d: %d\n", 2, grau_vertice(grafo, n, 2));
-    printf("\nGrau do vertice %d: %d\n", 3, grau_vertice(grafo, n, 3));
-    printf("\nGrau do vertice %d: %d\n", 4, grau_vertice(grafo, n, 4));
-
+    for (int i = 1; i <= n; i++) {
+        printf("\nGrau do vertice %d: %d\n", i, grau_vertice(grafo, n, i));
+    }
+    
     printf("\nNumero de vertices: %d\n", numero_vertices(grafo, n));
-
 
     liberar_memoria(grafo, n);
 
